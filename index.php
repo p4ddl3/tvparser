@@ -1,5 +1,11 @@
 <?php
 
+/**
+*Note : Currenty, this script download the target webpage and build the resulting display each time you call it. This job can be pretty slow.
+*		I'm working on a way to cache the resulting HTML webpage. Thus, the rendering of the tv program will be as fast as lighting :)
+*/
+
+
 include('simple_html_dom.php');
 echo '<meta http-equiv="content-type" content="text/html; charset=utf-8"></meta>';
 echo '<link rel="stylesheet" type="text/css" href="ink.css">';
@@ -8,9 +14,9 @@ echo '<link rel="stylesheet" type="text/css" href="ink.css">';
 */
 function getContent()
 {
-	//$html = file_get_html('http://www.programme-tv.net/programme/programme-tnt.html');
+	$html = file_get_html('http://www.programme-tv.net/programme/programme-tnt.html');
 	//$html = file_get_html('http://www.programme-tv.net/programme/toutes-les-chaines/');
-	$html = file_get_html('http://www.programme-tv.net/programme/cable-adsl-satellite/');
+	//$html = file_get_html('http://www.programme-tv.net/programme/cable-adsl-satellite/');
 	
 	$channels = array();
 	foreach($html->find('div[class=channel]') as $channel)
@@ -32,6 +38,8 @@ function getContent()
 			$program['hour'] = $hour[0]->plaintext;
 			$type = $metadata->find('.prog_type');
 			$program['type'] = $type[0]->plaintext;
+			
+			//Creepy??? Well, that's PHP :)
 			$channels[$channelTitle]['programs'][$progId] = $program;
 			$progId++;
 		}
@@ -41,7 +49,8 @@ function getContent()
 
 
 /**
-*Is in charge of displaying the whole thing in the prettiest way possible (depanding on my skills :O  )
+*(!)W.I.P.
+*This function is in charge of displaying the whole thing in the prettiest way possible (depanding on my skills :O  )
 */
 function prettyPrint($tvprogram)
 {
